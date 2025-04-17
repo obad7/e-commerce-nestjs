@@ -1,4 +1,5 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { HydratedDocument } from "mongoose";
 import { UserRoles } from "src/Common/Types/user.types";
 
 @Schema({
@@ -23,4 +24,6 @@ export class User {
 };
 
 const userSchema = SchemaFactory.createForClass(User);
-export const UserModel = MongooseModule.forFeature([{ name: 'User', schema: userSchema }]);
+export const UserModel = MongooseModule.forFeature([{ name: User.name, schema: userSchema }]);
+
+export type UserType = HydratedDocument<User>;
