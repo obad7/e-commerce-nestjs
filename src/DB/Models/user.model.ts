@@ -5,7 +5,7 @@ import { UserRoles } from "src/Common/Types/user.types";
 @Schema({
     timestamps: true,
 })
-    
+
 export class User {
     @Prop({ required: true, type: String, trim: true, lowercase: true })
     firstName: string;
