@@ -20,9 +20,6 @@ export class signUpDTO {
     @IsString()
     password: string;
 
-    @IsString()
-    cPassword: string;
-
     @IsEnum(UserRoles)
     role: string;
 
