@@ -1,14 +1,15 @@
+import { TokenService } from './../../Common/Services/token.service';
 import { Injectable, Body, ConflictException } from '@nestjs/common';
 import { UserRepo } from 'src/DB/Repositories/user.repo';
-import { Hash } from 'src/Common/Security/hash.security';
-import { signUpDTO } from '../DTOs/auth.dto';
+import { Hash, compareHash } from 'src/Common/Security/hash.security';
+import { LoginDTO, SignUpDTO } from '../DTOs/auth.dto';
 import { Events } from 'src/Utils/sendEmail';
 
 @Injectable()
 export class AuthService {
-    constructor(private readonly userRepo: UserRepo) {}
+    constructor(private readonly userRepo: UserRepo, private readonly tokenService: TokenService) {}
 
-    async signUpService(body: signUpDTO) {
+    async signUpService(body: SignUpDTO) {
         
         const { firstName, lastName, email, password, role } = body;
 
@@ -24,7 +25,7 @@ export class AuthService {
             subject: 'email verification',
             text: `Your OTP is ${otp}`,
             html: `<h1>Your OTP is ${otp}</h1>`,
-         });
+        });
 
         const newUser = await this.userRepo.create({
             firstName,
@@ -35,5 +36,32 @@ export class AuthService {
         });
 
         return newUser;
+    }
+
+    async loginService(body: LoginDTO) {
+        try {
+            const { email, password } = body;
+
+            const user = await this.userRepo.findByEmail(email);
+            if (!user || !compareHash(password, user.password)) {
+                throw new ConflictException('In-valid credentials');
+            }
+
+            // generate token
+            const accessToken = this.tokenService.generateToken(
+                {
+                    id: user._id,
+                    email: user.email,
+                },
+                {
+                    secret: process.env.JWT_SECRET,
+                    expiresIn: '1d',
+                }
+            );
+
+            return {accessToken};
+        } catch (error) {
+            throw new Error(`Login failed: ${error.message}`);
+        }
     }
 }

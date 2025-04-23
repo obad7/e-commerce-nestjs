@@ -2,7 +2,7 @@ import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validato
 import { UserRoles } from "src/Common/Types/user.types";
 
 
-export class signUpDTO {
+export class SignUpDTO {
     @IsString({ message: 'First name must be a string' })
     @IsNotEmpty({ message: 'First name is required' })
     @MinLength(3, { message: 'First name must be at least 3 characters long' })
@@ -23,4 +23,13 @@ export class signUpDTO {
     @IsEnum(UserRoles)
     role: string;
 
+}
+
+export class LoginDTO {
+    @IsEmail()
+    @IsNotEmpty({ message: 'Email is required' })
+    email: string;
+
+    @IsString()
+    password: string;
 }
