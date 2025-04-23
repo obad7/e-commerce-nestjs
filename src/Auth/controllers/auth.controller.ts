@@ -1,15 +1,16 @@
-import { Controller, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Body, Post, Res } from '@nestjs/common';
-import { Response } from 'express';
+import { Response, Request } from 'express';
 import { AuthService } from '../services/auth.service';
 import { SignUpDTO, LoginDTO } from '../DTOs/auth.dto';
+import { AuthGuard } from 'src/Common/Guards/auth.guard';
 
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService){}
 
     @Post('signup')
-    async signupHandler(
+    async SignupHandler(
         @Body(new ValidationPipe({ whitelist: true, forbidNonWhitelisted: true })) body: SignUpDTO,
         @Res() res: Response,
     ) {
@@ -18,11 +19,22 @@ export class AuthController {
     }
 
     @Post('login')
-    async loginHandler(
+    async LoginHandler(
         @Body() body: LoginDTO,
         @Res() res: Response
     ) {
         const results = await this.authService.loginService(body);
+        return res.status(200).json({results})
+    }
+
+    @Get('profile')
+    @UseGuards(AuthGuard)
+    async ProfileHandler(
+        @Req() req: Request,
+        @Res() res: Response,
+    ) {
+        const authUser = req['authUser'];
+        const results = await this.authService.profileService(authUser);
         return res.status(200).json({results})
     }
 }

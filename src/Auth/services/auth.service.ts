@@ -1,9 +1,10 @@
 import { TokenService } from './../../Common/Services/token.service';
-import { Injectable, Body, ConflictException } from '@nestjs/common';
+import { Injectable, Body, ConflictException, InternalServerErrorException } from '@nestjs/common';
 import { UserRepo } from 'src/DB/Repositories/user.repo';
 import { Hash, compareHash } from 'src/Common/Security/hash.security';
 import { LoginDTO, SignUpDTO } from '../DTOs/auth.dto';
 import { Events } from 'src/Utils/sendEmail';
+import { UserType } from 'src/DB/Models/user.model';
 
 @Injectable()
 export class AuthService {
@@ -62,6 +63,14 @@ export class AuthService {
             return {accessToken};
         } catch (error) {
             throw new Error(`Login failed: ${error.message}`);
+        }
+    }
+
+    async profileService(authUser: UserType) {
+        try {
+            return await this.userRepo.findByEmail(authUser.email);
+        } catch (error) {
+            throw new InternalServerErrorException(error.message);
         }
     }
 }
