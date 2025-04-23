@@ -1,5 +1,5 @@
 import * as nodemailer from 'nodemailer';
-import EventEmitter from 'node:events';
+import {EventEmitter} from 'node:events';
 export const Events = new EventEmitter();
 
 export const sendEmail = async (options: nodemailer.SendMailOptions) => {
