@@ -4,6 +4,8 @@ import { Response, Request } from 'express';
 import { AuthService } from '../services/auth.service';
 import { SignUpDTO, LoginDTO } from '../DTOs/auth.dto';
 import { AuthGuard } from 'src/Common/Guards/auth.guard';
+import { Roles } from 'src/Common/Decorators/roles.decorator';
+import { RoleGuard } from 'src/Common/Guards/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -28,7 +30,8 @@ export class AuthController {
     }
 
     @Get('profile')
-    @UseGuards(AuthGuard)
+    @Roles(['user', 'admin'])
+    @UseGuards(AuthGuard, RoleGuard)
     async ProfileHandler(
         @Req() req: Request,
         @Res() res: Response,
