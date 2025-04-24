@@ -1,6 +1,7 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import { HydratedDocument, Document } from "mongoose";
 import { UserRoles, GenderType } from "src/Common/Types/user.types";
+import { encrypt } from "src/Common/Security/encryption.security";
 
 @Schema({
     timestamps: true,
@@ -13,7 +14,14 @@ export class User {
     @Prop({ required: true, type: String, trim: true, lowercase: true })
     lastName: string;
 
-    @Prop({ required: true, type: String, trim: true, lowercase: true, unique: true })
+    @Prop({
+        required: true,
+        type: String,
+        trim: true,
+        lowercase: true,
+        unique: true,
+        index: { name: 'email_index' },
+    })
     email: string;
 
     @Prop({ required: true, type: String })
@@ -39,6 +47,14 @@ export class User {
 };
 
 const userSchema = SchemaFactory.createForClass(User);
+
+userSchema.pre('save', async function () {
+    let changes = this.getChanges()['$set'];
+    if (changes.phoneNumber) {
+        this.phoneNumber = encrypt(changes.phoneNumber, process.env.SECRET_KEY as string);
+    }
+})
+
 export const UserModel = MongooseModule.forFeature([{ name: User.name, schema: userSchema }]);
 
-export type UserType = HydratedDocument<User>;
+export type UserType = HydratedDocument<User> & Document;
