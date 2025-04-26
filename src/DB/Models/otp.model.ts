@@ -1,14 +1,18 @@
 import { MongooseModule, Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
 import { HydratedDocument, Document, Types } from "mongoose";
+import { OtpTypes } from "./../../Common/Types/otp.types";
 import { User } from "./user.model";
 
 @Schema({
     timestamps: true,
 })
 
-export class RevokedToken {
+export class Otp {
     @Prop({ required: true, type: String })
-    tokenId: string;
+    otp: string;
+
+    @Prop({ required: true, type: String, enum: OtpTypes })
+    otpType: string;
 
     @Prop({ required: true, type: Types.ObjectId, ref: User.name })
     userId: string | Types.ObjectId;
@@ -17,8 +21,10 @@ export class RevokedToken {
     expireTime : Date
 };
 
-const revokedTokenSchema = SchemaFactory.createForClass(RevokedToken);
-export const RevokedTokenModel = MongooseModule.forFeature([
-    { name: RevokedToken.name, schema: revokedTokenSchema }
+const otpSchema = SchemaFactory.createForClass(Otp);
+
+export const OtpModel = MongooseModule.forFeature([
+    { name: Otp.name, schema: otpSchema }
 ]);
-export type RevokedTokenType = HydratedDocument<RevokedToken> & Document;
+
+export type OtpType = HydratedDocument<Otp> & Document;
