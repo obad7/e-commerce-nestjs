@@ -50,8 +50,9 @@ const userSchema = SchemaFactory.createForClass(User);
 
 userSchema.pre('save', async function () {
     let changes = this.getChanges()['$set'];
+
     if (changes.phoneNumber) {
-        this.phoneNumber = encrypt(changes.phoneNumber, process.env.SECRET_KEY as string);
+        this.phoneNumber = encrypt(changes.phoneNumber, process.env.ENCRYPT_KEY as string);
     }
 })
 

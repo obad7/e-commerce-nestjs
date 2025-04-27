@@ -1,6 +1,6 @@
-import CryptoJS from "crypto-js";
+import * as CryptoJS from "crypto-js";
 
-export const encrypt = (plainText: string, secretKey: string) => {
+export const encrypt = (plainText: string, secretKey?: string) => {
     return CryptoJS.AES.encrypt(JSON.stringify(plainText), secretKey).toString()
 }
 

@@ -1,5 +1,6 @@
-import { IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator";
-import { UserRoles } from "src/Common/Types/user.types";
+import { Type } from "class-transformer";
+import { IsDate, IsEmail, IsEnum, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { GenderType, UserRoles } from "src/Common/Types/user.types";
 
 
 export class SignUpDTO {
@@ -23,6 +24,15 @@ export class SignUpDTO {
     @IsEnum(UserRoles)
     role: string;
 
+    @IsEnum(GenderType)
+    gender?: string;
+
+    @IsString()
+    phoneNumber?: string;
+
+    @IsDate()
+    @Type(() => Date)
+    DOB?: Date;
 }
 
 export class LoginDTO {
