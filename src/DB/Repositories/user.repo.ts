@@ -16,4 +16,5 @@ export class UserRepo extends BaseRepo<UserType> {
     async findByEmail(email: string): Promise<UserType | null> {
         return await this.findOne({ filters: { email } });
     }
+
 }

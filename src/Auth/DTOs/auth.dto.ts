@@ -43,3 +43,13 @@ export class LoginDTO {
     @IsString()
     password: string;
 }
+
+export class ConfirmEmailDTO {
+    @IsEmail()
+    @IsNotEmpty({ message: 'Email is required' })
+    email: string;
+
+    @IsString()
+    @IsNotEmpty({ message: 'OTP is required' })
+    otp: string;
+}

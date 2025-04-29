@@ -1,8 +1,8 @@
-import { Controller, Get, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Patch, Req, UseGuards, ValidationPipe } from '@nestjs/common';
 import { Body, Post, Res } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from '../services/auth.service';
-import { SignUpDTO, LoginDTO } from '../DTOs/auth.dto';
+import { SignUpDTO, LoginDTO, ConfirmEmailDTO } from '../DTOs/auth.dto';
 import { AuthGuard } from 'src/Common/Guards/auth.guard';
 import { Roles } from 'src/Common/Decorators/roles.decorator';
 import { RoleGuard } from 'src/Common/Guards/roles.guard';
@@ -18,6 +18,15 @@ export class AuthController {
     ) {
         const results = await this.authService.signUpService(body);
         return res.status(201).json({results})
+    }
+
+    @Patch('confirm-email')
+    async ConfirmEmailHandler(
+        @Body() body: ConfirmEmailDTO,
+        @Res() res: Response,
+    ) {
+        const results = await this.authService.confirmEmailService(body);
+        return res.status(200).json({results})
     }
 
     @Post('login')

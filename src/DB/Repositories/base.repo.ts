@@ -1,4 +1,4 @@
-import { Model, FilterQuery, PopulateOptions } from "mongoose";
+import { Model, FilterQuery, PopulateOptions, Document } from "mongoose";
 
 interface IFindOne<TDoc> {
     filters: FilterQuery<TDoc>,
@@ -12,11 +12,15 @@ interface IFind<TDoc> {
     populate?: PopulateOptions[];
 }
 
-export abstract class BaseRepo<TDoc> {
+export abstract class BaseRepo<TDoc extends Document> {
     constructor(private readonly model: Model<TDoc>) { }
     
     async create(data: Partial<TDoc>): Promise<TDoc> {
         return await this.model.create(data);
+    }
+
+    async save(newDoc: TDoc) {
+        return await newDoc.save();
     }
 
     async findOne({
@@ -35,4 +39,13 @@ export abstract class BaseRepo<TDoc> {
         return await this.model.find(filters, select).populate(populate);
     }
     
+    async deleteOne(filters: FilterQuery<TDoc>) {
+        if (filters._id) await this.model.findByIdAndDelete(filters._id);
+        return await this.model.findOneAndDelete(filters);
+    }
+
+    async updateOne(filters: FilterQuery<TDoc>, data: Partial<TDoc>) {
+        if (filters._id) await this.model.findByIdAndUpdate(filters._id);
+        return await this.model.updateOne(filters, data);
+    }
 }

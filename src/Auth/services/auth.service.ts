@@ -1,8 +1,14 @@
 import { TokenService } from './../../Common/Services/token.service';
-import { Injectable, Body, ConflictException, InternalServerErrorException } from '@nestjs/common';
+import {
+    Injectable,
+    ConflictException,
+    InternalServerErrorException,
+    NotFoundException,
+    BadRequestException
+} from '@nestjs/common';
 import { UserRepo } from 'src/DB/Repositories/user.repo';
 import { Hash, compareHash } from 'src/Common/Security/hash.security';
-import { LoginDTO, SignUpDTO } from '../DTOs/auth.dto';
+import { ConfirmEmailDTO, LoginDTO, SignUpDTO } from '../DTOs/auth.dto';
 import { Events } from 'src/Utils/sendEmail';
 import { UserType } from 'src/DB/Models/user.model';
 import { OtpRepo } from 'src/DB/Repositories/otp.repo';
@@ -53,6 +59,40 @@ export class AuthService {
         });
 
         return newUser;
+    }
+
+    async confirmEmailService(body: ConfirmEmailDTO) {
+        try {
+            const { email, otp } = body;
+
+            const user = await this.userRepo.findByEmail(email);
+            if (!user) throw new NotFoundException('User not found');
+
+            const returnedOtp = await this.otpRepo.findOne({
+                filters: {
+                    userId: user._id,
+                    otpType: OtpTypes.CONFIRMATION
+                }
+            });
+            if (!returnedOtp) throw new NotFoundException('Otp not found');
+
+            if (!compareHash(otp, returnedOtp.otp)) {
+                throw new BadRequestException('In-valid otp');
+            }
+
+            if (returnedOtp.expireTime < new Date()) {
+                throw new BadRequestException('Otp expired');
+            }
+
+            await this.otpRepo.deleteOne({ _id: returnedOtp._id });
+
+            user.emailVerified = true;
+            await this.userRepo.save(user);
+            
+            return {'message': 'Email confirmed'};
+        } catch (error) {
+            throw new Error(`Email confirmation failed: ${error.message}`);
+        }
     }
 
     async loginService(body: LoginDTO) {
