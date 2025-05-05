@@ -1,4 +1,4 @@
-import { Controller, Get, Patch, Req, UseGuards, ValidationPipe } from '@nestjs/common';
+import { Controller, Get, Patch, Req, UseGuards, UseInterceptors, ValidationPipe } from '@nestjs/common';
 import { Body, Post, Res } from '@nestjs/common';
 import { Response, Request } from 'express';
 import { AuthService } from '../services/auth.service';
@@ -6,7 +6,9 @@ import { SignUpDTO, LoginDTO, ConfirmEmailDTO } from '../DTOs/auth.dto';
 import { AuthGuard } from 'src/Common/Guards/auth.guard';
 import { Roles } from 'src/Common/Decorators/roles.decorator';
 import { RoleGuard } from 'src/Common/Guards/roles.guard';
+import { PerformanceMonitoringInterceptor } from 'src/Common/Interceptors/performance-montiring.interceptor';
 
+@UseInterceptors(PerformanceMonitoringInterceptor)
 @Controller('auth')
 export class AuthController {
     constructor(private readonly authService: AuthService){}
