@@ -6,7 +6,7 @@ import { Category, CategoryType } from "../Models/category.model";
 
 
 @Injectable()
-export class CateoryRepo extends BaseRepo<CategoryType> {
+export class CategoryRepo extends BaseRepo<CategoryType> {
     constructor(
         @InjectModel(Category.name) private readonly categoryModel: Model<CategoryType>,
     ) { 
