@@ -34,6 +34,9 @@ export class Category {
 
     @Prop({ type: Object })
     image: object;
+
+    @Prop({ type: String })
+    customId: string
 };
 
 const categorySchema = SchemaFactory.createForClass(Category);

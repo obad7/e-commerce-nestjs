@@ -7,11 +7,12 @@ import { TokenService } from 'src/Common/Services/token.service';
 import { UserModel } from 'src/DB/Models/user.model';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepo } from 'src/DB/Repositories/user.repo';
+import { UploadFileService } from 'src/Common/Services/cloudinary.service';
 
 
 @Module({
   imports: [CategoryModel, UserModel],
   controllers: [CategoryController],
-  providers: [CategoryService, CategoryRepo, JwtService, TokenService, UserRepo],
+  providers: [CategoryService, CategoryRepo, JwtService, TokenService, UserRepo, UploadFileService],
 })
 export class CategoryModule {}

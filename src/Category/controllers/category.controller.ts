@@ -30,7 +30,7 @@ export class CategoryController {
         @UploadedFile() image?: Express.Multer.File
     ) {
         const authUser = req['authUser'];
-        const results = await this.categoryService.createCategory(name, authUser);
+        const results = await this.categoryService.createCategory(name, authUser, image);
         return res.status(200).json({ results });
     }
 }
