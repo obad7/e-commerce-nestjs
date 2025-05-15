@@ -32,6 +32,9 @@ export class Category {
     @Prop({ required: true, type: Types.ObjectId, ref: User.name })
     addedBy: string | Types.ObjectId;
 
+    @Prop({ type: Types.ObjectId, ref: User.name })
+    updatedBy: string | Types.ObjectId;
+
     @Prop({ type: Object })
     image: object;
 
